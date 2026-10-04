@@ -1,0 +1,225 @@
+# 🛡️ Pramaan
+
+### Proof travels. Your data doesn't.
+
+**Pramaan** is a zero-knowledge government interoperability mesh that lets departments verify facts about citizens — without ever transferring their actual data. Built for **Smart India Hackathon 2026**.
+
+[![Status](https://img.shields.io/badge/status-prototype-blue)]()
+[![License](https://img.shields.io/badge/license-MIT-green)]()
+[![Made for](https://img.shields.io/badge/made%20for-SIH%202026-orange)]()
+
+---
+
+## 📖 Table of Contents
+
+- [The Problem](#-the-problem)
+- [Our Solution](#-our-solution)
+- [Key Features](#-key-features)
+- [How It's Different](#-how-its-different)
+- [Architecture](#-architecture)
+- [Tech Stack](#-tech-stack)
+- [Getting Started](#-getting-started)
+- [Environment Variables](#-environment-variables)
+- [Project Structure](#-project-structure)
+- [Security](#-security)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [Team](#-team)
+- [References](#-references)
+- [License](#-license)
+
+---
+
+## 🧩 The Problem
+
+Government departments run independent portals, registries, and legacy systems that were never built to talk to each other. The result:
+
+- Citizens repeatedly submit the **same documents** across multiple offices
+- No **unified way to track** an application across departments
+- Officials lack a **consolidated view** of applications, approvals, and outcomes
+- Sharing citizen data between departments means moving sensitive information around — a real security and privacy risk that makes departments hesitant to integrate in the first place
+
+## 💡 Our Solution
+
+Every existing approach to this problem (API marketplaces, federated identity, data-sharing pipelines) is built on one assumption: **data has to move for departments to trust each other.**
+
+**Pramaan flips that.** Departments verify facts about a citizen — *"is this person's income below ₹2.5 lakh?"* — using cryptographic proofs, without ever seeing the citizen's actual document or data. The document stays exactly where it was issued. Only a mathematically verifiable **proof** travels.
+
+## ✨ Key Features
+
+- 🔐 **Zero-knowledge proof verification** — prove eligibility without revealing the underlying data
+- 🆔 **Single Application Number (SAN)** — one tracking number across every department involved
+- 🤝 **AI-assisted schema mapping** — auto-translates data formats between mismatched department systems
+- 🔌 **Non-invasive legacy connectors** — onboard old systems via change-data-capture, zero code changes required
+- ✅ **Scoped, revocable consent** — citizens control exactly what's shared, with whom, and for how long
+- ⛓️ **Tamper-evident audit log** — real SHA-256 hash-chained logging, independently verifiable
+- 📊 **SLA monitoring dashboard** — predictive alerts for officials before applications breach deadlines
+- 🔔 **Proactive eligibility notifications** — the system tells citizens what they qualify for, instead of making them search
+
+## 🔍 How It's Different
+
+| Existing Systems | Pramaan |
+|---|---|
+| Move the actual document/data | Moves a cryptographic proof, never the raw data |
+| Require departments to rebuild/standardize | AI-assisted mapping connects mismatched legacy systems as-is |
+| Centralize or duplicate citizen data | Data stays decentralized at its source department |
+| Manual audit trails | Real-time, tamper-evident hash-chained logging |
+
+## 🏗️ Architecture
+
+```mermaid
+flowchart LR
+    C[Citizen App] -->|Generate Proof| PM[Pramaan Mesh]
+    PM -->|Verified Proof Only| D1[Department A]
+    PM -->|Verified Proof Only| D2[Department B]
+    D1 -.->|Raw data stays here| DB1[(Dept A Database)]
+    D2 -.->|Raw data stays here| DB2[(Dept B Database)]
+    PM --> AL[(Tamper-Evident Audit Log)]
+    PM --> AI[AI Schema Mapping Engine]
+    D1 --> CDC1[CDC Connector]
+    D2 --> CDC2[CDC Connector]
+```
+
+See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full system breakdown.
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js (React), TypeScript, Tailwind CSS, shadcn/ui |
+| Backend | Node.js (NestJS / Firebase Cloud Functions) |
+| Database | PostgreSQL (Prisma ORM) / Firestore |
+| Auth | Firebase Authentication (OTP + Email), OAuth2/OIDC |
+| Real-time | WebSockets / Firestore listeners |
+| Crypto | zk-SNARKs (snarkjs + circom), SHA-256 hash chaining |
+| AI | Gemini API (schema mapping) |
+| Infra | Docker, GitHub Actions CI/CD, Prometheus + Grafana, Sentry |
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- npm or pnpm
+- A Firebase project (or PostgreSQL instance, depending on backend variant)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/<your-username>/pramaan.git
+cd pramaan
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# fill in the required values — see Environment Variables below
+
+# Run database migrations (if using Prisma/Postgres)
+npx prisma migrate dev
+
+# Start the development server
+npm run dev
+```
+
+The app should now be running at `http://localhost:3000`.
+
+## 🔑 Environment Variables
+
+Create a `.env.local` file with the following:
+
+```env
+# Database
+DATABASE_URL=
+
+# Auth
+NEXTAUTH_SECRET=
+FIREBASE_API_KEY=
+FIREBASE_PROJECT_ID=
+
+# AI
+GEMINI_API_KEY=
+
+# Misc
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+> ⚠️ Never commit `.env.local` — it's already included in `.gitignore`.
+
+## 📁 Project Structure
+
+```
+pramaan/
+├── apps/
+│   ├── web/              # Next.js frontend
+│   └── api/               # Backend (NestJS / Cloud Functions)
+├── packages/
+│   └── shared-types/      # Shared TypeScript types
+├── prisma/
+│   └── schema.prisma      # Database schema
+├── docs/
+│   ├── ARCHITECTURE.md
+│   └── SECURITY.md
+└── README.md
+```
+
+## 🔒 Security
+
+Pramaan follows a defense-in-depth approach rather than claiming to be unbreachable:
+
+- No centralized data store — each department retains its own data
+- Short-lived, single-use cryptographic proofs
+- Hardware-backed key storage on the client
+- AI never has final authority — a deterministic rules engine approves every action
+- Tamper-evident, independently verifiable audit log
+
+Full threat model and mitigations in [`SECURITY.md`](./SECURITY.md).
+
+## 🗺️ Roadmap
+
+- [x] Core proof generation & verification flow
+- [x] Citizen wallet & unified application tracking
+- [x] AI-assisted schema mapping (live Gemini integration)
+- [x] Tamper-evident audit log with integrity verification
+- [ ] Real CDC connector for legacy system integration
+- [ ] Aadhaar/DigiLocker identity provider integration
+- [ ] Multi-language support (Hindi + regional languages)
+- [ ] Production security audit & penetration testing
+
+## 🤝 Contributing
+
+Contributions are welcome. Please open an issue to discuss significant changes before submitting a pull request.
+
+```bash
+# Fork the repo, then:
+git checkout -b feature/your-feature-name
+git commit -m "Add your feature"
+git push origin feature/your-feature-name
+# Open a Pull Request
+```
+
+## 👥 Team
+
+Built for **Smart India Hackathon 2026**.
+
+| Name | Role |
+|---|---|
+| _Add your name_ | _Add your role_ |
+| _Add teammate_ | _Add their role_ |
+
+## 📚 References
+
+- [API Setu](https://apisetu.gov.in/) — MeitY Open API Platform
+- [X-Road](https://x-road.global/) — Nordic Institute for Interoperability Solutions
+- [W3C Verifiable Credentials Data Model](https://www.w3.org/TR/vc-data-model-2.0/)
+- Digital Personal Data Protection Act, 2023 — [meity.gov.in](https://www.meity.gov.in/)
+- [Smart India Hackathon](https://sih.gov.in/)
+
+## 📄 License
+
+This project is licensed under the MIT License — see [`LICENSE`](./LICENSE) for details.
+
+---
+
+<p align="center"><b>Pramaan</b> — Proof travels. Your data doesn't.</p>
